@@ -21,7 +21,7 @@ export const siteConfig = {
 
   /* TODO: the production URL of this portfolio (used for SEO,
      Open Graph, sitemap and robots). No trailing slash. */
-  siteUrl: "https://your-domain.com",
+  siteUrl: "https://portfolio-indol-two-88.vercel.app",
 
   /* Path to your CV inside /public. Replace public/cv.pdf with
      your real resume and keep this path unchanged. */
