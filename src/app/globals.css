@@ -1,0 +1,128 @@
+@import "tailwindcss";
+
+/* Class-based dark mode, driven by next-themes (`.dark` on <html>). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ────────────────────────────────────────────────────────────
+ * Design tokens
+ * Sober palette: near-black, grays and white with a violet
+ * accent. Light theme first, dark theme (default) below.
+ * ──────────────────────────────────────────────────────────── */
+:root {
+  --background: #fafafa;
+  --surface: #f1f1f3;
+  --card: #ffffff;
+  --border: rgba(9, 9, 11, 0.09);
+  --border-strong: rgba(9, 9, 11, 0.18);
+  --foreground: #18181b;
+  --muted: #51525c;
+  --subtle: #8f8f98;
+  --accent: #7c3aed;
+  --accent-hover: #6d28d9;
+  --accent-soft: rgba(124, 58, 237, 0.09);
+  --accent-foreground: #ffffff;
+  --gradient-from: #6366f1;
+  --gradient-to: #a855f7;
+}
+
+.dark {
+  --background: #0a0a0f;
+  --surface: #12121a;
+  --card: #101017;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --foreground: #f4f4f5;
+  --muted: #a1a1aa;
+  --subtle: #6e6e78;
+  --accent: #8b5cf6;
+  --accent-hover: #a78bfa;
+  --accent-soft: rgba(139, 92, 246, 0.12);
+  --accent-foreground: #ffffff;
+  --gradient-from: #818cf8;
+  --gradient-to: #c084fc;
+}
+
+/* Map tokens to Tailwind utilities (bg-background, text-muted, …). */
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-card: var(--card);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-foreground: var(--accent-foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* Gradient text used for name/headings highlights. */
+@utility text-gradient {
+  background-image: linear-gradient(
+    135deg,
+    var(--gradient-from),
+    var(--gradient-to)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Accent gradient surface (primary CTAs, bars, rings). */
+@utility bg-gradient-accent {
+  background-image: linear-gradient(
+    135deg,
+    var(--gradient-from),
+    var(--gradient-to)
+  );
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Keeps anchored sections clear of the fixed navbar. */
+  scroll-padding-top: 6rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+/* Minimal custom scrollbar that matches both themes. */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 8px;
+  border: 2px solid var(--background);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--subtle);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}

@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <defs>
+    <radialGradient id="glow" cx="0.5" cy="0" r="1">
+      <stop offset="0" stop-color="#22d3ee" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#22d3ee" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1280" height="720" fill="#0b0e13"/>
+  <rect width="1280" height="380" fill="url(#glow)"/>
+  <!-- Desktop app window -->
+  <rect x="140" y="90" width="1000" height="580" rx="14" fill="#111621" stroke="#ffffff" stroke-opacity="0.08"/>
+  <rect x="140" y="90" width="1000" height="42" rx="14" fill="#161c29"/>
+  <circle cx="176" cy="111" r="6" fill="#ff5f57"/>
+  <circle cx="198" cy="111" r="6" fill="#febc2e"/>
+  <circle cx="220" cy="111" r="6" fill="#28c840"/>
+  <text x="640" y="117" text-anchor="middle" font-family="monospace" font-size="14" fill="#ffffff" fill-opacity="0.35">HVF Analyzer — Paciente_014 / OD</text>
+
+  <!-- Left panel: patient info -->
+  <rect x="164" y="156" width="230" height="490" rx="10" fill="#ffffff" fill-opacity="0.03"/>
+  <circle cx="279" cy="210" r="30" fill="#22d3ee" fill-opacity="0.25"/>
+  <rect x="200" y="256" width="158" height="12" rx="6" fill="#ffffff" fill-opacity="0.22"/>
+  <rect x="200" y="280" width="120" height="10" rx="5" fill="#ffffff" fill-opacity="0.12"/>
+  <rect x="188" y="316" width="182" height="1" fill="#ffffff" fill-opacity="0.08"/>
+  <rect x="200" y="336" width="90" height="10" rx="5" fill="#ffffff" fill-opacity="0.14"/>
+  <rect x="200" y="358" width="140" height="10" rx="5" fill="#22d3ee" fill-opacity="0.6"/>
+  <rect x="200" y="390" width="90" height="10" rx="5" fill="#ffffff" fill-opacity="0.14"/>
+  <rect x="200" y="412" width="110" height="10" rx="5" fill="#22d3ee" fill-opacity="0.6"/>
+  <rect x="200" y="444" width="90" height="10" rx="5" fill="#ffffff" fill-opacity="0.14"/>
+  <rect x="200" y="466" width="100" height="10" rx="5" fill="#22d3ee" fill-opacity="0.6"/>
+  <rect x="200" y="600" width="158" height="34" rx="17" fill="#22d3ee" fill-opacity="0.55"/>
+
+  <!-- Right panel: 24-2 sensitivity grid -->
+  <rect x="418" y="156" width="722" height="490" rx="10" fill="#ffffff" fill-opacity="0.03"/>
+  <rect x="440" y="176" width="220" height="14" rx="7" fill="#ffffff" fill-opacity="0.2"/>
+  <g font-family="monospace" font-size="17" fill="#e2e8f0" text-anchor="middle">
+    <!-- staggered 24-2-like grid of numeric cells -->
+    <g fill-opacity="0.85">
+      <text x="700" y="230">28</text><text x="740" y="230">27</text><text x="780" y="230">30</text><text x="820" y="230">26</text>
+      <text x="660" y="266">29</text><text x="700" y="266">31</text><text x="740" y="266">28</text><text x="780" y="266">27</text><text x="820" y="266">29</text><text x="860" y="266">30</text>
+      <text x="620" y="302">27</text><text x="660" y="302">30</text><text x="700" y="302">29</text><text x="740" y="302">28</text><text x="780" y="302">31</text><text x="820" y="302">27</text><text x="860" y="302">29</text><text x="900" y="302">28</text>
+      <text x="580" y="338">26</text><text x="620" y="338">29</text><text x="660" y="338">28</text><text x="700" y="338" fill="#22d3ee">✕</text><text x="740" y="338">30</text><text x="780" y="338">29</text><text x="820" y="338">27</text><text x="860" y="338">28</text><text x="900" y="338">30</text>
+      <text x="580" y="374">28</text><text x="620" y="374">27</text><text x="660" y="374">29</text><text x="700" y="374">28</text><text x="740" y="374">31</text><text x="780" y="374">27</text><text x="820" y="374">29</text><text x="860" y="374" fill="#f87171">&lt;0</text><text x="900" y="374">28</text>
+      <text x="620" y="410">30</text><text x="660" y="410">28</text><text x="700" y="410">27</text><text x="740" y="410">29</text><text x="780" y="410">28</text><text x="820" y="410">30</text><text x="860" y="410">27</text><text x="900" y="410">29</text>
+      <text x="660" y="446">29</text><text x="700" y="446">27</text><text x="740" y="446">30</text><text x="780" y="446">28</text><text x="820" y="446">29</text><text x="860" y="446">27</text>
+      <text x="700" y="482">28</text><text x="740" y="482">29</text><text x="780" y="482">27</text><text x="820" y="482">30</text>
+    </g>
+  </g>
+
+  <!-- Confidence legend + review actions -->
+  <rect x="440" y="540" width="14" height="14" rx="3" fill="#22d3ee" fill-opacity="0.6"/>
+  <text x="462" y="552" font-family="sans-serif" font-size="14" fill="#ffffff" fill-opacity="0.5">High confidence</text>
+  <rect x="620" y="540" width="14" height="14" rx="3" fill="#f87171" fill-opacity="0.6"/>
+  <text x="642" y="552" font-family="sans-serif" font-size="14" fill="#ffffff" fill-opacity="0.5">Needs review</text>
+
+  <rect x="440" y="584" width="150" height="38" rx="19" fill="#ffffff" fill-opacity="0.06"/>
+  <rect x="606" y="584" width="150" height="38" rx="19" fill="#22d3ee" fill-opacity="0.55"/>
+  <text x="681" y="608" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#ffffff">Confirm</text>
+</svg>
