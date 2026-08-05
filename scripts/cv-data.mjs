@@ -1,9 +1,24 @@
 /**
- * CV content, kept separate from layout (generate-cv.mjs) so it's easy
- * to update without touching PDF-drawing code. Mirrors the facts already
- * published in src/content/*.ts and src/config/site.config.ts.
+ * English CV content, kept separate from layout (generate-cv.mjs) so it's
+ * easy to update without touching PDF-drawing code. Mirrors the facts
+ * already published in src/content/*.ts and src/config/site.config.ts.
+ *
+ * The Spanish edition lives in cv-data-es.mjs and must stay in sync.
  */
 export const cv = {
+  documentTitle: "Resume",
+
+  /** Section headings, so the layout code stays language-agnostic. */
+  labels: {
+    summary: "Professional Summary",
+    skills: "Technical Skills",
+    experience: "Professional Experience",
+    projects: "Featured Projects",
+    education: "Education",
+    certifications: "Certifications",
+    languages: "Languages",
+  },
+
   name: "Manuel Felipe Paz Vidal",
   titles: "Systems Engineer · Full Stack Developer",
   location: "Popayán, Cauca, Colombia",

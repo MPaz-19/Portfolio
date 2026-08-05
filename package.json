@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "cv": "node scripts/generate-cv.mjs"
+    "cv": "node scripts/generate-cv.mjs en && node scripts/generate-cv.mjs es"
   },
   "dependencies": {
     "framer-motion": "^12.43.0",

@@ -1,19 +1,44 @@
 /**
- * Generates public/cv.pdf from cv-data.mjs using pdfkit.
- * Run with: npm run cv
+ * Renders the CV to public/ as a PDF using pdfkit.
  *
- * Layout mirrors a classic LaTeX-style resume: centered header, small-caps
+ *   node scripts/generate-cv.mjs en   -> public/cv.pdf
+ *   node scripts/generate-cv.mjs es   -> public/cv-es.pdf
+ *
+ * `npm run cv` builds both so the two editions can never drift.
+ *
+ * Layout mirrors a classic LaTeX-style resume: centered header, spaced-out
  * section headings with a rule, and left/right-aligned entry rows (role +
  * dates on one line, org + location in italics below, bullets underneath).
+ * All wording — including section headings — comes from the locale data
+ * file, so this module stays language-agnostic.
  */
 import PDFDocument from "pdfkit";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { cv } from "./cv-data.mjs";
+
+const LOCALES = {
+  en: { data: "./cv-data.mjs", output: "cv.pdf" },
+  es: { data: "./cv-data-es.mjs", output: "cv-es.pdf" },
+};
+
+const locale = (process.argv[2] ?? "en").toLowerCase();
+if (!LOCALES[locale]) {
+  console.error(
+    `Unknown locale "${locale}". Expected one of: ${Object.keys(LOCALES).join(", ")}`
+  );
+  process.exit(1);
+}
+
+const { cv } = await import(LOCALES[locale].data);
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const OUTPUT_PATH = path.join(__dirname, "..", "public", "cv.pdf");
+const OUTPUT_PATH = path.join(
+  __dirname,
+  "..",
+  "public",
+  LOCALES[locale].output
+);
 
 const MARGIN = 42;
 const PAGE_WIDTH = 612; // US Letter
@@ -28,9 +53,10 @@ const doc = new PDFDocument({
   size: "LETTER",
   margins: { top: MARGIN, bottom: MARGIN, left: MARGIN, right: MARGIN },
   info: {
-    Title: `${cv.name} — Resume`,
+    Title: `${cv.name} — ${cv.documentTitle}`,
     Author: cv.name,
   },
+  lang: locale,
 });
 
 doc.pipe(fs.createWriteStream(OUTPUT_PATH));
@@ -64,17 +90,22 @@ function sectionHeading(title) {
   doc.y = ruleY + 8;
 }
 
-/** One line with bold left text and regular right-aligned text (dates). */
+/** One row with bold left text and regular right-aligned text (dates). */
 function entryHeaderRow(left, right) {
   const y = doc.y;
   doc.font("Times-Bold").fontSize(10.5).fillColor(INK).text(left, MARGIN, y, {
     width: CONTENT_WIDTH * 0.72,
   });
+  const afterLeft = doc.y;
   doc
     .font("Times-Roman")
     .fontSize(10)
     .fillColor(MUTED)
     .text(right, MARGIN, y, { width: CONTENT_WIDTH, align: "right" });
+  /* Both columns start from the same baseline, so drawing the (always
+     single-line) date last would rewind doc.y and let the next line overlap
+     a title that wrapped. Continue below whichever column is taller. */
+  doc.y = Math.max(afterLeft, doc.y);
 }
 
 function sublineRow(text) {
@@ -147,8 +178,8 @@ doc
   .fillColor(ACCENT)
   .text(cv.links.join("  ·  "), { align: "center" });
 
-/* ── Professional Summary ────────────────────────────────── */
-sectionHeading("Professional Summary");
+/* ── Summary ─────────────────────────────────────────────── */
+sectionHeading(cv.labels.summary);
 /* `align: "justify"` makes pdfkit encode inter-word gaps as pure
    kerning offsets with no space glyph, so copy-paste and ATS resume
    parsers see the whole paragraph as one run-on word. Left-aligned
@@ -160,11 +191,19 @@ doc
   .text(cv.summary, MARGIN, doc.y, { width: CONTENT_WIDTH, align: "left" });
 
 /* ── Technical Skills ─────────────────────────────────────── */
-sectionHeading("Technical Skills");
+sectionHeading(cv.labels.skills);
+/* Measure the widest label instead of hardcoding a column width —
+   translated labels ("DevOps y Herramientas:") are far longer than the
+   English ones and would otherwise collide with the items column. */
+const labelWidth =
+  Math.max(
+    ...cv.skills.map((group) =>
+      doc.font("Times-Bold").fontSize(9.8).widthOfString(`${group.label}:`)
+    )
+  ) + 10;
 for (const group of cv.skills) {
   ensureSpace(14);
   const y = doc.y;
-  const labelWidth = 105;
   doc
     .font("Times-Bold")
     .fontSize(9.8)
@@ -181,7 +220,7 @@ for (const group of cv.skills) {
 }
 
 /* ── Professional Experience ─────────────────────────────── */
-sectionHeading("Professional Experience");
+sectionHeading(cv.labels.experience);
 for (const job of cv.experience) {
   entryBlock({
     left: job.role,
@@ -193,7 +232,7 @@ for (const job of cv.experience) {
 }
 
 /* ── Featured Projects ────────────────────────────────────── */
-sectionHeading("Featured Projects");
+sectionHeading(cv.labels.projects);
 for (const project of cv.projects) {
   entryBlock({
     left: `${project.name}  (${project.tag})`,
@@ -206,7 +245,7 @@ for (const project of cv.projects) {
 }
 
 /* ── Education ────────────────────────────────────────────── */
-sectionHeading("Education");
+sectionHeading(cv.labels.education);
 for (const edu of cv.education) {
   ensureSpace(30);
   entryHeaderRow(edu.degree, edu.period);
@@ -215,14 +254,14 @@ for (const edu of cv.education) {
 }
 
 /* ── Certifications ───────────────────────────────────────── */
-sectionHeading("Certifications");
+sectionHeading(cv.labels.certifications);
 for (const cert of cv.certifications) {
   ensureSpace(14);
   bulletLine(`${cert.name} — ${cert.issuer} (${cert.year})`);
 }
 
 /* ── Languages ────────────────────────────────────────────── */
-sectionHeading("Languages");
+sectionHeading(cv.labels.languages);
 doc.font("Times-Roman").fontSize(9.8).fillColor(INK).text(cv.languages, MARGIN, doc.y, {
   width: CONTENT_WIDTH,
 });
