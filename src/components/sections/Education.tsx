@@ -21,7 +21,7 @@ export function Education() {
       <Container>
         <Reveal>
           <SectionHeading
-            eyebrow="05 · Education"
+            eyebrow="04 · Education"
             title="Education & certifications"
             description="Formal studies plus the courses and bootcamps I take to keep learning constantly."
           />

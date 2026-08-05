@@ -70,8 +70,10 @@ function ensureSpace(minHeight) {
 }
 
 function sectionHeading(title) {
-  ensureSpace(30);
-  doc.moveDown(0.35);
+  /* Reserve room for the heading *and* a first line under it, so a heading
+     can never be orphaned at the bottom of a page. */
+  ensureSpace(48);
+  doc.moveDown(0.25);
   doc
     .font("Times-Bold")
     .fontSize(11.5)
@@ -87,14 +89,17 @@ function sectionHeading(title) {
     .lineWidth(0.75)
     .strokeColor(ACCENT)
     .stroke();
-  doc.y = ruleY + 8;
+  doc.y = ruleY + 6;
 }
 
 /** One row with bold left text and regular right-aligned text (dates). */
 function entryHeaderRow(left, right) {
   const y = doc.y;
+  /* The date column never needs more than ~70pt, so give the title the rest
+     minus a gutter — at 0.72 the longer translated titles wrapped for no
+     reason while 100pt of the date column sat empty. */
   doc.font("Times-Bold").fontSize(10.5).fillColor(INK).text(left, MARGIN, y, {
-    width: CONTENT_WIDTH * 0.72,
+    width: CONTENT_WIDTH * 0.84,
   });
   const afterLeft = doc.y;
   doc
@@ -132,7 +137,7 @@ function bulletLine(text) {
       width: CONTENT_WIDTH - bulletIndent,
       align: "left",
     });
-  doc.moveDown(0.25);
+  doc.moveDown(0.18);
 }
 
 function entryBlock({ left, right, org, location, bullets, link }) {
@@ -220,15 +225,19 @@ for (const group of cv.skills) {
 }
 
 /* ── Professional Experience ─────────────────────────────── */
-sectionHeading(cv.labels.experience);
-for (const job of cv.experience) {
-  entryBlock({
-    left: job.role,
-    right: job.period,
-    org: job.org,
-    location: job.location,
-    bullets: job.bullets,
-  });
+/* Skipped entirely while there's no experience to list, so the CV never
+   shows an orphaned heading with nothing under it. */
+if (cv.experience.length > 0) {
+  sectionHeading(cv.labels.experience);
+  for (const job of cv.experience) {
+    entryBlock({
+      left: job.role,
+      right: job.period,
+      org: job.org,
+      location: job.location,
+      bullets: job.bullets,
+    });
+  }
 }
 
 /* ── Featured Projects ────────────────────────────────────── */

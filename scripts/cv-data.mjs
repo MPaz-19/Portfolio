@@ -51,20 +51,10 @@ export const cv = {
     },
   ],
 
-  experience: [
-    {
-      role: "Software Development Practice",
-      period: "2023 — 2024",
-      org: "University Software Lab, Universidad del Cauca",
-      location: "Popayán, Colombia",
-      bullets: [
-        "Developed features in a 5-person Scrum team with weekly sprints, following agile methodologies for a real stakeholder.",
-        "Modeled the relational database and built the Java/Spring Boot backend for the team's project.",
-        "Wrote technical documentation and presented demos directly to stakeholders.",
-        "Introduced Git flow and pull-request code reviews to the team's workflow, delivering the project on time with the highest evaluation in the cohort.",
-      ],
-    },
-  ],
+  /* No professional experience yet — the section is skipped entirely while
+     this is empty. Add entries here (role / period / org / location /
+     bullets) once there's a real job or internship to list. */
+  experience: [],
 
   projects: [
     {

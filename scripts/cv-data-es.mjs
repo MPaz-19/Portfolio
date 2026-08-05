@@ -28,7 +28,7 @@ export const cv = {
   ],
 
   summary:
-    "Estudiante de Ingeniería de Sistemas y desarrollador full stack con experiencia práctica construyendo y desplegando aplicaciones web en producción en contextos académicos, de investigación clínica y freelance. Especializado en desarrollo backend con Node.js, Express, Java y Spring Boot, con un sólido dominio de bases de datos SQL y diseño de APIs RESTful. Con experiencia en front ends con React y TypeScript, arquitecturas de microservicios, contenedorización con Docker y despliegue en la nube sobre Vercel y AWS. Comprometido con el aprendizaje continuo, la arquitectura limpia, las pruebas automatizadas y el código honesto y bien documentado.",
+    "Estudiante de Ingeniería de Sistemas y desarrollador full stack con experiencia construyendo y desplegando aplicaciones web en producción en contextos académicos, de investigación clínica y freelance. Especializado en backend con Node.js, Express, Java y Spring Boot, con sólido dominio de bases de datos SQL y diseño de APIs RESTful. Experiencia en front ends con React y TypeScript, arquitecturas de microservicios, contenedorización con Docker y despliegue en Vercel y AWS. Comprometido con la arquitectura limpia, las pruebas automatizadas y el aprendizaje continuo.",
 
   skills: [
     {
@@ -49,20 +49,10 @@ export const cv = {
     },
   ],
 
-  experience: [
-    {
-      role: "Práctica de Desarrollo de Software",
-      period: "2023 — 2024",
-      org: "Laboratorio de Software, Universidad del Cauca",
-      location: "Popayán, Colombia",
-      bullets: [
-        "Desarrollé funcionalidades en un equipo Scrum de 5 personas con sprints semanales, aplicando metodologías ágiles para un cliente real.",
-        "Modelé la base de datos relacional y construí el backend en Java/Spring Boot del proyecto del equipo.",
-        "Redacté la documentación técnica y presenté las demostraciones directamente a los interesados.",
-        "Introduje Git flow y las revisiones de código por pull request en el flujo de trabajo del equipo, entregando el proyecto a tiempo y con la evaluación más alta de la cohorte.",
-      ],
-    },
-  ],
+  /* Sin experiencia profesional todavía — la sección se omite por completo
+     mientras esté vacía. Agregar entradas aquí (role / period / org /
+     location / bullets) cuando haya un empleo o práctica real que listar. */
+  experience: [],
 
   projects: [
     {
@@ -92,7 +82,7 @@ export const cv = {
     },
     {
       name: "HVF Analyzer — Herramienta de Apoyo Diagnóstico Clínico",
-      tag: "Proyecto de investigación en equipo",
+      tag: "Investigación en equipo",
       period: "2026",
       org: "Universidad del Cauca",
       location: "Popayán, Colombia",

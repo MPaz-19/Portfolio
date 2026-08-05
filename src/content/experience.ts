@@ -3,11 +3,13 @@ import type { Experience } from "@/types";
 /* ────────────────────────────────────────────────────────────
  * Experience timeline.
  *
- * No professional experience yet? That's fine — the entries
- * below showcase personal projects and academic practice, which
- * is exactly what recruiters expect from a junior profile.
+ * Empty on purpose — there's no professional experience to show
+ * yet, and the Projects section carries the weight instead. The
+ * Experience section (and its navbar link) hide themselves while
+ * this array is empty, so nothing needs to be touched elsewhere.
  *
- * When you land a job or internship, add it using this template:
+ * When you land a job, internship or practice, add it here and
+ * both the section and the nav link come back automatically:
  *
  * {
  *   company: "Company Name",
@@ -20,23 +22,4 @@ import type { Experience } from "@/types";
  * },
  * ──────────────────────────────────────────────────────────── */
 
-export const experience: Experience[] = [
-  
-  {
-    company: "University Software Lab",
-    role: "Software Development Practice",
-    period: "2023 — 2024",
-    type: "academic",
-    description:
-      "Team-based academic practice building software for real stakeholders using agile methodologies.",
-    responsibilities: [
-      "Developed features in a 5-person Scrum team with weekly sprints.",
-      "Modeled relational databases and built the Java/Spring Boot backend.",
-      "Wrote technical documentation and presented demos to stakeholders.",
-    ],
-    achievements: [
-      "Delivered the project on time with the highest evaluation in the cohort.",
-      "Introduced Git flow and pull-request reviews to the team workflow.",
-    ],
-  },
-];
+export const experience: Experience[] = [];

@@ -146,7 +146,7 @@ export function Contact() {
       <Container>
         <Reveal>
           <SectionHeading
-            eyebrow="08 · Contact"
+            eyebrow="07 · Contact"
             title="Let's build something together"
             description="Have an opportunity, a project or just want to say hi? My inbox is always open — I'll get back to you as soon as I can."
           />

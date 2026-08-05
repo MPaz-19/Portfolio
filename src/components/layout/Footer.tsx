@@ -1,13 +1,18 @@
 import { Mail } from "lucide-react";
 import Link from "next/link";
 import { siteConfig } from "@/config/site.config";
+import { experience } from "@/content/experience";
 import { GithubIcon, LinkedinIcon } from "@/components/ui/BrandIcons";
 import { Container } from "@/components/ui/Container";
 
+/* Mirrors the navbar: the Experience link only exists while its section
+   has content to show. */
 const footerLinks = [
   { label: "About", href: "/#about" },
   { label: "Projects", href: "/#projects" },
-  { label: "Experience", href: "/#experience" },
+  ...(experience.length > 0
+    ? [{ label: "Experience", href: "/#experience" }]
+    : []),
   { label: "Contact", href: "/#contact" },
 ];
 

@@ -6,15 +6,21 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { siteConfig } from "@/config/site.config";
+import { experience } from "@/content/experience";
 import { cn } from "@/lib/utils";
 import { Container } from "@/components/ui/Container";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
+/* The Experience link only exists while there's experience to link to —
+   its section hides itself when the content file is empty, and a nav item
+   pointing at a missing anchor would just scroll nowhere. */
 const navLinks = [
   { label: "About", href: "/#about", id: "about" },
   { label: "Tech", href: "/#tech", id: "tech" },
   { label: "Projects", href: "/#projects", id: "projects" },
-  { label: "Experience", href: "/#experience", id: "experience" },
+  ...(experience.length > 0
+    ? [{ label: "Experience", href: "/#experience", id: "experience" }]
+    : []),
   { label: "Contact", href: "/#contact", id: "contact" },
 ];
 

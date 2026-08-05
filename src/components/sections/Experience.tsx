@@ -15,11 +15,17 @@ const typeLabel: Record<ExperienceType, string> = {
 };
 
 export function Experience() {
+  /* Nothing to show yet — render nothing rather than an empty timeline.
+     The navbar link is hidden by the same condition. */
+  if (experience.length === 0) return null;
+
   return (
     <section id="experience" className="py-24 md:py-32">
       <Container>
         <Reveal>
           <SectionHeading
+            /* Sections are numbered by hand: if experience comes back, this
+               becomes 04 and Education/Skills/GitHub/Contact shift up one. */
             eyebrow="04 · Experience"
             title="Where I've built things"
             description="Professional work, personal products and academic practice — everything that shaped how I build software."

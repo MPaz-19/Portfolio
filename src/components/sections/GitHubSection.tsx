@@ -75,7 +75,7 @@ export async function GitHubSection() {
       <Container>
         <Reveal>
           <SectionHeading
-            eyebrow="07 · GitHub"
+            eyebrow="06 · GitHub"
             title="Open source & activity"
             description="Live data from the GitHub API — public repositories, most used languages and my latest commits."
           />

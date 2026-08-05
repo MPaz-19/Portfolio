@@ -12,7 +12,7 @@ export function Skills() {
       <Container>
         <Reveal>
           <SectionHeading
-            eyebrow="06 · Skills"
+            eyebrow="05 · Skills"
             title="Core strengths"
             description="The mix of technical and human skills I bring to a team."
           />
