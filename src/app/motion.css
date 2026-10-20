@@ -1,0 +1,1016 @@
+/* ────────────────────────────────────────────────────────────
+ * Motion layer
+ *
+ * Preloader counter, masked headline reveals, scroll-driven
+ * reveals, count-ups, marquee, expanding project rows, magnetic
+ * buttons and the cursor follower. Inspired by Awwwards-listed
+ * portfolios (Pier Gorelli, Stéfano Girardelli).
+ *
+ * Everything is plain CSS except the cursor, the magnetic pull and
+ * the preloader timing. Scroll-driven effects live inside
+ * `@supports (animation-timeline: view())`, so browsers without
+ * them — and anyone with reduced motion — get the static, fully
+ * visible layout.
+ *
+ * Scroll-driven rules use animation longhands on purpose: the
+ * `animation` shorthand resets `animation-timeline`, so a minifier
+ * that reorders declarations could silently break them.
+ * ──────────────────────────────────────────────────────────── */
+
+@property --fx-num {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --fx-pct {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+/* ── Buttons & links ─────────────────────────────────────── */
+
+.fx-btn {
+  --mx: 0px;
+  --my: 0px;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  min-height: 3.25rem;
+  padding: 0 1.5rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--foreground);
+  color: var(--background);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transform: translate(var(--mx), var(--my));
+  transition:
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.3s;
+}
+.fx-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--accent);
+  transform: translateY(101%);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fx-btn:hover,
+.fx-btn:focus-visible {
+  color: var(--on-accent);
+}
+.fx-btn:hover::before,
+.fx-btn:focus-visible::before {
+  transform: none;
+}
+.fx-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.fx-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  min-height: 3.25rem;
+  padding: 0 1.375rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  color: var(--foreground);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    border-color 0.3s,
+    color 0.3s;
+}
+.fx-btn-ghost:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.fx-btn-sm {
+  min-height: 2.75rem;
+  padding: 0 1.125rem;
+  font-size: 0.875rem;
+}
+
+.fx-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  color: var(--foreground);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+.fx-link > span {
+  padding-bottom: 2px;
+  background: linear-gradient(currentColor, currentColor) no-repeat right
+    bottom / 100% 1px;
+}
+.fx-link:hover {
+  color: var(--accent);
+}
+.fx-link:hover > span {
+  animation: fx-swipe 0.75s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.fx-link svg {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fx-link:hover svg {
+  transform: translate(3px, -3px);
+}
+
+/* Nav links: the label rolls up to reveal an accent copy. */
+.fx-roll {
+  display: inline-flex;
+  flex-direction: column;
+  height: 1.5em;
+  overflow: hidden;
+  line-height: 1.5;
+}
+.fx-roll > span {
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fx-roll > span + span {
+  color: var(--accent);
+}
+a:hover > .fx-roll > span,
+a:focus-visible > .fx-roll > span {
+  transform: translateY(-100%);
+}
+
+/* ── Scroll progress (bottom edge of the navbar) ─────────── */
+
+.fx-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  pointer-events: none;
+}
+
+/* ── Hero ────────────────────────────────────────────────── */
+
+.fx-hero-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 88px 88px;
+  background-position: center top;
+  -webkit-mask-image: radial-gradient(
+    ellipse 80% 70% at 50% 30%,
+    #000 25%,
+    transparent 75%
+  );
+  mask-image: radial-gradient(
+    ellipse 80% 70% at 50% 30%,
+    #000 25%,
+    transparent 75%
+  );
+}
+
+/* Masked line: the inner span slides up from below the mask. */
+.fx-line,
+.fx-sline {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+.fx-line > span,
+.fx-sline > span {
+  display: block;
+}
+
+.fx-pulse {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 50%;
+  background: #22c55e;
+}
+.fx-pulse::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #22c55e;
+}
+
+.fx-cue {
+  position: relative;
+  display: inline-block;
+  width: 56px;
+  height: 1px;
+  overflow: hidden;
+  background: var(--border-strong);
+}
+.fx-cue::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform: translateX(-100%);
+}
+
+/* ── Marquee ─────────────────────────────────────────────── */
+
+.fx-marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 10%,
+    #000 90%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 10%,
+    #000 90%,
+    transparent
+  );
+}
+.fx-marquee-track {
+  display: flex;
+  width: max-content;
+}
+.fx-marquee-group {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+  padding-right: 2.5rem;
+  white-space: nowrap;
+}
+.fx-outline {
+  color: transparent;
+  -webkit-text-stroke: 1px
+    color-mix(in oklab, var(--foreground) 55%, transparent);
+}
+.fx-sep {
+  width: 10px;
+  height: 10px;
+  flex: none;
+  background: var(--accent);
+}
+
+/* ── Section scaffolding ─────────────────────────────────── */
+
+.fx-sec-head {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  padding-top: 1.125rem;
+  border-top: 1px solid var(--border);
+}
+.fx-sec-head::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 72px;
+  height: 1px;
+  background: var(--accent);
+  transform-origin: 0 50%;
+}
+
+/* ── About: statement lit word by word ───────────────────── */
+
+.fx-words {
+  view-timeline: --fx-words block;
+}
+.fx-words .is-accent {
+  color: var(--accent);
+}
+
+.fx-cells {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--border);
+  background: var(--border);
+}
+.fx-cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 14rem;
+  padding: 1.75rem;
+  background: var(--background);
+  transition: background-color 0.4s;
+}
+.fx-cell::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fx-cell:hover {
+  background: var(--surface);
+}
+.fx-cell:hover::before {
+  transform: none;
+}
+
+/* ── Counters (CSS integer animation) ────────────────────── */
+
+.fx-count {
+  --fx-num: var(--to);
+  counter-reset: fx-num var(--fx-num);
+  font-variant-numeric: tabular-nums;
+}
+.fx-count::after {
+  content: counter(fx-num, decimal-leading-zero);
+}
+.fx-count.is-pct::after {
+  content: counter(fx-num) "%";
+}
+
+/* ── Tech stack ──────────────────────────────────────────── */
+
+.fx-stack-cols {
+  view-timeline: --fx-cols block;
+}
+.fx-stack-item {
+  transition:
+    transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.3s;
+}
+.fx-stack-item::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--border-strong);
+  transition:
+    background-color 0.3s,
+    transform 0.3s;
+}
+.fx-stack-item:hover {
+  transform: translateX(6px);
+  color: var(--foreground);
+}
+.fx-stack-item:hover::before {
+  background: var(--dot, var(--accent));
+  transform: scale(1.4);
+}
+
+/* ── Projects: rows that fill and expand ─────────────────── */
+
+.fx-projects {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--border-strong);
+}
+.fx-proj {
+  position: relative;
+  isolation: isolate;
+  border-bottom: 1px solid var(--border-strong);
+}
+.fx-proj::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in oklab, var(--accent) 9%, var(--background));
+  transform: scaleY(0);
+  transform-origin: 50% 100%;
+  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fx-proj:hover::before,
+.fx-proj:focus-within::before {
+  transform: none;
+  transform-origin: 50% 0;
+}
+.fx-proj-head {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1.5fr) minmax(0, 1fr) 9.5rem 2.75rem;
+  align-items: start;
+  gap: 1rem 2rem;
+  padding: 2rem 0.5rem;
+}
+/* The title link stretches over the whole row. */
+.fx-proj-link {
+  color: inherit;
+  text-decoration: none;
+}
+.fx-proj-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.fx-proj-link:focus-visible {
+  outline: none;
+}
+.fx-proj:has(.fx-proj-link:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.fx-proj-title {
+  display: inline-block;
+  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fx-proj:hover .fx-proj-title {
+  transform: translateX(10px);
+}
+.fx-proj-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  transition:
+    background-color 0.35s,
+    border-color 0.35s,
+    color 0.35s;
+}
+.fx-proj-arrow svg {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fx-proj:hover .fx-proj-arrow,
+.fx-proj:focus-within .fx-proj-arrow {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.fx-proj:hover .fx-proj-arrow svg,
+.fx-proj:focus-within .fx-proj-arrow svg {
+  transform: rotate(45deg);
+}
+.fx-proj-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fx-proj:hover .fx-proj-body,
+.fx-proj:focus-within .fx-proj-body {
+  grid-template-rows: 1fr;
+}
+.fx-proj-body > div {
+  min-height: 0;
+  overflow: hidden;
+}
+.fx-proj-body-grid {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 1rem 2rem;
+  padding: 0 0.5rem 2.25rem;
+}
+.fx-proj-solves {
+  grid-column: 2;
+}
+.fx-proj-links {
+  position: relative;
+  z-index: 2;
+  grid-column: 3;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 0.625rem;
+}
+.fx-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4375rem;
+  padding: 0.1875rem 0.625rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  color: var(--foreground);
+}
+.fx-tag::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--tag, var(--muted));
+}
+
+/* Touch screens can't hover: show the details expanded. */
+@media (hover: none) {
+  .fx-proj-body {
+    grid-template-rows: 1fr;
+  }
+}
+
+@media (max-width: 860px) {
+  .fx-proj-head {
+    grid-template-columns: 2rem minmax(0, 1fr) 2.75rem;
+    gap: 0.75rem 1rem;
+  }
+  .fx-proj-arrow {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  .fx-proj-head > .fx-proj-stack,
+  .fx-proj-head > .fx-proj-meta {
+    grid-column: 2 / 3;
+  }
+  .fx-proj-meta {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .fx-proj-body-grid {
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: 1rem;
+  }
+  .fx-proj-links {
+    grid-column: 2;
+  }
+}
+
+/* ── Background: skills & GitHub bars ────────────────────── */
+
+.fx-skills {
+  view-timeline: --fx-skills block;
+}
+.fx-bar,
+.fx-lb {
+  transform-origin: 0 50%;
+}
+.fx-gh {
+  view-timeline: --fx-gh block;
+}
+
+/* ── Contact: outline headline that fills in ─────────────── */
+
+.fx-fill {
+  view-timeline: --fx-fill block;
+}
+.fx-fill-line {
+  display: block;
+  width: fit-content;
+  /* Extra box below the baseline so the text fill covers descenders. */
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+.fx-fill-line .fx-dot {
+  color: var(--accent);
+  -webkit-text-stroke: 0;
+}
+
+.fx-field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  border-bottom: 1px solid var(--border-strong);
+}
+.fx-field::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fx-field:focus-within::after {
+  transform: none;
+}
+.fx-field[data-invalid="true"] {
+  border-color: #ef4444;
+}
+.fx-field input,
+.fx-field textarea {
+  width: 100%;
+  padding: 0.375rem 0 0.875rem;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--foreground);
+  font: inherit;
+  font-size: 1.125rem;
+  line-height: 1.5;
+  resize: vertical;
+}
+.fx-field input::placeholder,
+.fx-field textarea::placeholder {
+  color: var(--muted);
+  opacity: 0.75;
+}
+
+/* ── Cursor follower ─────────────────────────────────────── */
+
+.fx-cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 90;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.fx-cursor[data-visible="1"] {
+  opacity: 1;
+}
+.fx-cursor-ring {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid color-mix(in oklab, var(--foreground) 55%, transparent);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition:
+    width 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    height 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.3s,
+    border-color 0.3s,
+    opacity 0.3s;
+}
+.fx-cursor-label {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--on-accent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.fx-cursor[data-state="link"] .fx-cursor-ring {
+  width: 56px;
+  height: 56px;
+  border-color: var(--accent);
+  background: color-mix(in oklab, var(--accent) 16%, transparent);
+}
+.fx-cursor[data-state="view"] .fx-cursor-ring {
+  width: 92px;
+  height: 92px;
+  border-color: var(--accent);
+  background: var(--accent);
+}
+.fx-cursor[data-state="view"] .fx-cursor-label {
+  opacity: 1;
+}
+.fx-cursor[data-state="hide"] .fx-cursor-ring {
+  opacity: 0;
+}
+@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .fx-cursor {
+    display: none;
+  }
+}
+
+/* ── Preloader ───────────────────────────────────────────── */
+
+.fx-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--background);
+  transition: transform 0.9s cubic-bezier(0.76, 0, 0.24, 1);
+}
+.fx-loader.is-leaving {
+  transform: translateY(-100%);
+}
+.fx-loader-pct {
+  counter-reset: fx-pct var(--fx-pct);
+  font-variant-numeric: tabular-nums;
+}
+.fx-loader-pct::after {
+  content: counter(fx-pct) "%";
+}
+.fx-loader-bar {
+  transform-origin: 0 50%;
+}
+
+/* ── Time-based motion ───────────────────────────────────── */
+
+@media (prefers-reduced-motion: no-preference) {
+  .fx-marquee-track {
+    animation: fx-marquee 60s linear infinite;
+  }
+  .fx-marquee:hover .fx-marquee-track {
+    animation-play-state: paused;
+  }
+  .fx-pulse::after {
+    animation: fx-ping 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+  .fx-cue::after {
+    animation: fx-cue 2.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  }
+  .fx-loader-pct {
+    animation: fx-pct 1.5s cubic-bezier(0.65, 0, 0.35, 1) 0.1s both;
+  }
+  .fx-loader-bar {
+    animation: fx-grow 1.5s cubic-bezier(0.65, 0, 0.35, 1) 0.1s both;
+  }
+}
+
+/* Hero intro: waits (paused) until the preloader lifts and adds
+   `intro-ready` to <html>. Without JS the hero is simply static. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .fx-line > span,
+  .fx-intro {
+    animation-duration: 1.1s;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    animation-fill-mode: both;
+    animation-delay: calc(var(--d, 0) * 110ms + 120ms);
+    animation-play-state: paused;
+  }
+  .fx-line > span {
+    animation-name: fx-rise;
+  }
+  .fx-intro {
+    animation-name: fx-fadeup;
+    animation-duration: 0.9s;
+  }
+  .intro-ready .fx-line > span,
+  .intro-ready .fx-intro {
+    animation-play-state: running;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-btn {
+    transform: none;
+  }
+  .fx-link:hover > span {
+    animation: none;
+  }
+}
+
+/* ── Scroll-driven motion ────────────────────────────────── */
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .fx-progress,
+    .fx-sec-head::before,
+    .fx-sline > span,
+    .fx-reveal,
+    .fx-cells > li,
+    .fx-words .fx-w,
+    .fx-stack-col,
+    .fx-stack-cols .fx-count,
+    .fx-projects > li,
+    .fx-skills .fx-count,
+    .fx-skills .fx-bar,
+    .fx-lb,
+    .fx-fill-line {
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+    }
+
+    main > section {
+      view-timeline: --fx-sec block;
+    }
+
+    .fx-progress {
+      animation-name: fx-grow;
+      animation-timeline: scroll(root);
+    }
+
+    .fx-sec-head::before {
+      animation-name: fx-grow;
+      animation-timeline: --fx-sec;
+      animation-range: entry 0% entry 30%;
+    }
+
+    .fx-sline > span {
+      animation-name: fx-rise;
+      animation-timeline: --fx-sec;
+      animation-range: entry calc(8% + var(--d, 0) * 6%) entry
+        calc(34% + var(--d, 0) * 6%);
+    }
+
+    .fx-reveal {
+      animation-name: fx-fadeup;
+      animation-timeline: view();
+      animation-range: entry 0% entry 70%;
+    }
+
+    .fx-cells > li {
+      animation-name: fx-fadeup;
+      animation-timeline: view();
+      animation-range: entry calc(var(--d, 0) * 12%) entry
+        calc(60% + var(--d, 0) * 12%);
+    }
+
+    .fx-words .fx-w {
+      animation-name: fx-lit;
+      animation-timeline: --fx-words;
+      animation-range: cover calc(10% + var(--i, 0) * var(--step, 1.6%)) cover
+        calc(14% + var(--i, 0) * var(--step, 1.6%));
+    }
+    .fx-words .fx-w.is-accent {
+      animation-name: fx-lit-accent;
+    }
+
+    .fx-stack-col {
+      animation-name: fx-fadeup;
+      animation-timeline: --fx-cols;
+      animation-range: entry calc(var(--d, 0) * 10%) entry
+        calc(45% + var(--d, 0) * 10%);
+    }
+    .fx-stack-cols .fx-count {
+      animation-name: fx-count;
+      animation-timeline: --fx-cols;
+      animation-range: entry 5% entry 70%;
+    }
+
+    .fx-projects > li {
+      animation-name: fx-fadeup;
+      animation-timeline: view();
+      animation-range: entry 0% entry 90%;
+    }
+
+    .fx-skills .fx-count,
+    .fx-skills .fx-bar {
+      animation-timeline: --fx-skills;
+      animation-range: entry calc(var(--d, 0) * 8%) entry
+        calc(45% + var(--d, 0) * 8%);
+    }
+    .fx-skills .fx-count {
+      animation-name: fx-count;
+    }
+    .fx-skills .fx-bar {
+      animation-name: fx-bar;
+    }
+
+    .fx-lb {
+      animation-name: fx-bar;
+      animation-timeline: --fx-gh;
+      animation-range: entry 20% entry 100%;
+    }
+
+    .fx-fill-line {
+      color: transparent;
+      -webkit-text-stroke: 1px
+        color-mix(in oklab, var(--foreground) 42%, transparent);
+      background: linear-gradient(90deg, var(--foreground) 50%, transparent 50%)
+        0 0 / 200% 100% no-repeat;
+      -webkit-background-clip: text;
+      background-clip: text;
+      animation-name: fx-fill;
+      animation-timeline: --fx-fill;
+      animation-range: entry calc(4% + var(--d, 0) * 24%) entry
+        calc(44% + var(--d, 0) * 24%);
+    }
+  }
+}
+
+/* ── Keyframes ───────────────────────────────────────────── */
+
+@keyframes fx-rise {
+  from {
+    transform: translateY(105%);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes fx-fadeup {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fx-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes fx-bar {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes fx-lit {
+  from {
+    color: color-mix(in oklab, var(--foreground) 20%, var(--background));
+  }
+  to {
+    color: var(--foreground);
+  }
+}
+@keyframes fx-lit-accent {
+  from {
+    color: color-mix(in oklab, var(--foreground) 20%, var(--background));
+  }
+  to {
+    color: var(--accent);
+  }
+}
+@keyframes fx-count {
+  from {
+    --fx-num: 0;
+  }
+  to {
+    --fx-num: var(--to);
+  }
+}
+@keyframes fx-pct {
+  from {
+    --fx-pct: 0;
+  }
+  to {
+    --fx-pct: 100;
+  }
+}
+@keyframes fx-fill {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+@keyframes fx-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes fx-ping {
+  75%,
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+@keyframes fx-cue {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: none;
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+@keyframes fx-swipe {
+  0% {
+    background-size: 100% 1px;
+    background-position: right bottom;
+  }
+  50% {
+    background-size: 0 1px;
+    background-position: right bottom;
+  }
+  50.1% {
+    background-size: 0 1px;
+    background-position: left bottom;
+  }
+  100% {
+    background-size: 100% 1px;
+    background-position: left bottom;
+  }
+}

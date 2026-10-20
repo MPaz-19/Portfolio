@@ -21,6 +21,8 @@
   --accent-hover: #6d28d9;
   --accent-soft: rgba(124, 58, 237, 0.09);
   --accent-foreground: #ffffff;
+  /* Text on solid accent fills; picked per theme for 4.5:1 contrast. */
+  --on-accent: #ffffff;
   --gradient-from: #6366f1;
   --gradient-to: #a855f7;
 }
@@ -38,6 +40,7 @@
   --accent-hover: #a78bfa;
   --accent-soft: rgba(139, 92, 246, 0.12);
   --accent-foreground: #ffffff;
+  --on-accent: #0a0a0f;
   --gradient-from: #818cf8;
   --gradient-to: #c084fc;
 }
@@ -56,6 +59,7 @@
   --color-accent-hover: var(--accent-hover);
   --color-accent-soft: var(--accent-soft);
   --color-accent-foreground: var(--accent-foreground);
+  --color-on-accent: var(--on-accent);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

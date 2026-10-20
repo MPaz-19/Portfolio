@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import "./motion.css";
 import { siteConfig } from "@/config/site.config";
+import { CustomCursor } from "@/components/layout/CustomCursor";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { Preloader } from "@/components/layout/Preloader";
@@ -70,9 +72,10 @@ export default function RootLayout({
         <ThemeProvider>
           <Preloader />
           <Navbar />
-          <main>{children}</main>
+          <main className="overflow-x-clip">{children}</main>
           <Footer />
           <ScrollToTop />
+          <CustomCursor />
         </ThemeProvider>
         <script
           type="application/ld+json"

@@ -1,55 +1,76 @@
-"use client";
-
 import { techStack } from "@/content/tech-stack";
-import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
-import { Reveal } from "@/components/ui/Reveal";
-import { SectionHeading } from "@/components/ui/SectionHeading";
+import { DisplayHeading, SectionHead } from "@/components/ui/SectionHead";
+import { cssVars, labelClass } from "@/lib/styles";
+
+const total = techStack.reduce(
+  (sum, category) => sum + category.items.length,
+  0
+);
 
 export function TechStack() {
   return (
-    <section id="tech" className="py-24 md:py-32">
-      <Container>
-        <Reveal>
-          <SectionHeading
-            eyebrow="02 · Tech Stack"
-            title="Technologies I work with"
-            description="The tools I reach for to build reliable products — organized by where they live in the stack."
+    <section id="tech" aria-labelledby="tech-title" className="pb-24 md:pb-32">
+      <Container className="flex flex-col gap-12 md:gap-20">
+        <SectionHead
+          id="tech-title"
+          index="02"
+          title="Tech stack"
+          aside={`${total} technologies · ${techStack.length} layers`}
+        />
+
+        <div className="grid items-end gap-x-20 gap-y-6 lg:grid-cols-2">
+          <DisplayHeading
+            lines={[
+              { text: "Technologies" },
+              { text: "I work with.", muted: true },
+            ]}
           />
-        </Reveal>
+          <p className="fx-reveal max-w-[44ch] text-[1.0625rem] leading-relaxed text-muted">
+            The tools I reach for to build reliable products — organized by
+            where they live in the stack.
+          </p>
+        </div>
 
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="fx-stack-cols grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
           {techStack.map((category, index) => (
-            <Reveal key={category.title} delay={index * 0.08}>
-              <Card hover={false} className="h-full">
-                <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-soft text-accent">
-                    <category.icon className="h-5 w-5" />
-                  </span>
-                  <h3 className="font-medium text-foreground">
+            <div
+              key={category.title}
+              className="fx-stack-col"
+              style={cssVars({ "--d": index })}
+            >
+              <div className="flex items-start justify-between gap-3 border-b border-border-strong pb-5">
+                <div className="flex flex-col gap-2.5">
+                  <span
+                    aria-hidden="true"
+                    className="fx-count text-[clamp(3.5rem,6vw,5.25rem)] font-semibold leading-[0.9] tracking-[-0.05em] text-foreground"
+                    style={cssVars({ "--to": category.items.length })}
+                  />
+                  <h3 className="text-lg font-medium text-foreground">
                     {category.title}
+                    <span className="sr-only">
+                      {" "}
+                      — {category.items.length} technologies
+                    </span>
                   </h3>
-                  <span className="ml-auto font-mono text-xs text-subtle">
-                    {category.items.length}
-                  </span>
                 </div>
+                <span className={labelClass}>
+                  [{String(index + 1).padStart(2, "0")}]
+                </span>
+              </div>
 
-                <ul className="mt-5 flex flex-wrap gap-2.5">
-                  {category.items.map((item) => (
-                    <li key={item.name}>
-                      <span className="inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-1.5 text-sm text-muted transition-colors duration-300 hover:border-accent/40 hover:text-foreground">
-                        <span
-                          aria-hidden="true"
-                          className="h-2 w-2 rounded-full"
-                          style={{ backgroundColor: item.color }}
-                        />
-                        {item.name}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </Card>
-            </Reveal>
+              <ul>
+                {category.items.map((item) => (
+                  <li
+                    key={item.name}
+                    className="fx-stack-item flex items-center gap-3 border-b border-border py-3 text-[0.9375rem] text-muted"
+                    style={cssVars({ "--dot": item.color })}
+                  >
+                    {item.name}
+                  </li>
+                ))}
+              </ul>
+            </div>
           ))}
         </div>
       </Container>
