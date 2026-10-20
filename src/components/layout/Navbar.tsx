@@ -14,19 +14,35 @@ import { ThemeToggle } from "@/components/layout/ThemeToggle";
 /* The Experience link only exists while there's experience to link to —
    its section hides itself when the content file is empty, and a nav item
    pointing at a missing anchor would just scroll nowhere. */
+const hasExperience = experience.length > 0;
+
+/* `index` mirrors the [NN] number on each section's header. */
 const navLinks = [
-  { label: "About", href: "/#about", id: "about" },
-  { label: "Tech", href: "/#tech", id: "tech" },
-  { label: "Projects", href: "/#projects", id: "projects" },
-  ...(experience.length > 0
-    ? [{ label: "Experience", href: "/#experience", id: "experience" }]
+  { label: "About", href: "/#about", id: "about", index: "01" },
+  { label: "Stack", href: "/#tech", id: "tech", index: "02" },
+  { label: "Work", href: "/#projects", id: "projects", index: "03" },
+  ...(hasExperience
+    ? [
+        {
+          label: "Experience",
+          href: "/#experience",
+          id: "experience",
+          index: "04",
+        },
+      ]
     : []),
-  { label: "Contact", href: "/#contact", id: "contact" },
+  {
+    label: "Contact",
+    href: "/#contact",
+    id: "contact",
+    index: hasExperience ? "06" : "05",
+  },
 ];
 
 /**
  * Fixed navbar with blur-on-scroll, scroll-spy highlighting of
- * the active section (home only) and an animated mobile menu.
+ * the active section (home only), rolling link labels, a scroll
+ * progress line and an animated mobile menu.
  */
 export function Navbar() {
   const pathname = usePathname();
@@ -86,25 +102,29 @@ export function Navbar() {
           className="font-mono text-sm font-semibold tracking-tight text-foreground"
           aria-label="Go to top"
         >
-          <span className="text-accent">&lt;</span>
-          {siteConfig.initials}
-          <span className="text-accent">/&gt;</span>
+          &lt;{siteConfig.initials}
+          <span className="text-accent">/</span>&gt;
         </Link>
 
         {/* Desktop navigation */}
-        <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
+        <nav className="hidden items-center gap-7 md:flex" aria-label="Main">
           {navLinks.map((link) => (
             <Link
               key={link.id}
               href={link.href}
+              aria-current={active === link.id ? "true" : undefined}
               className={cn(
-                "rounded-full px-3.5 py-2 text-sm transition-colors duration-300",
-                active === link.id
-                  ? "bg-accent-soft text-accent"
-                  : "text-muted hover:text-foreground"
+                "inline-flex min-h-11 items-center gap-1.5 text-sm transition-colors duration-300",
+                active === link.id ? "text-accent" : "text-foreground/80"
               )}
             >
-              {link.label}
+              <span className="font-mono text-[0.6875rem] text-muted">
+                {link.index}
+              </span>
+              <span className="fx-roll">
+                <span>{link.label}</span>
+                <span aria-hidden="true">{link.label}</span>
+              </span>
             </Link>
           ))}
         </nav>
@@ -132,6 +152,9 @@ export function Navbar() {
         </div>
       </Container>
 
+      {/* Scroll progress (scroll-driven CSS, see motion.css) */}
+      <span aria-hidden="true" className="fx-progress" />
+
       {/* Mobile menu */}
       <AnimatePresence>
         {open && (
@@ -149,8 +172,11 @@ export function Navbar() {
                   key={link.id}
                   href={link.href}
                   onClick={closeMenu}
-                  className="rounded-lg px-3 py-2.5 text-sm text-muted transition-colors hover:bg-surface hover:text-foreground"
+                  className="flex items-baseline gap-3 rounded-lg px-3 py-2.5 text-sm text-muted transition-colors hover:bg-surface hover:text-foreground"
                 >
+                  <span className="font-mono text-[0.6875rem]">
+                    {link.index}
+                  </span>
                   {link.label}
                 </Link>
               ))}

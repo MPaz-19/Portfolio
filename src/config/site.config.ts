@@ -19,6 +19,13 @@ export const siteConfig = {
   email: "mpazvi19@gmail.com",
   location: "Popayán, Colombia",
 
+  /* Technical annotations in the hero and footer: short city label,
+     coordinates, and the IANA time zone used for the live clock. */
+  city: "Popayán, CO",
+  coordinates: "2.4448° N — 76.6147° W",
+  timeZone: "America/Bogota",
+  utcOffset: "GMT-5",
+
   /* TODO: the production URL of this portfolio (used for SEO,
      Open Graph, sitemap and robots). No trailing slash. */
   siteUrl: "https://portfolio-indol-two-88.vercel.app",

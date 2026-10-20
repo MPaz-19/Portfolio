@@ -1,23 +1,13 @@
 "use client";
 
-import {
-  AlertCircle,
-  CheckCircle2,
-  FileDown,
-  Loader2,
-  Mail,
-  MapPin,
-  Send,
-} from "lucide-react";
+import { AlertCircle, ArrowRight, ArrowUpRight, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { siteConfig } from "@/config/site.config";
-import { cn } from "@/lib/utils";
-import { GithubIcon, LinkedinIcon } from "@/components/ui/BrandIcons";
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
-import { Reveal } from "@/components/ui/Reveal";
-import { SectionHeading } from "@/components/ui/SectionHeading";
+import { useMagnetic } from "@/components/ui/Magnetic";
+import { SectionHead } from "@/components/ui/SectionHead";
+import { cssVars, labelClass } from "@/lib/styles";
+import { cn } from "@/lib/utils";
 
 type FormStatus = "idle" | "loading" | "success" | "error";
 
@@ -45,35 +35,24 @@ function validate(values: FormValues): FormErrors {
   return errors;
 }
 
-const contactChannels = [
-  {
-    label: "Email",
-    value: siteConfig.email,
-    href: `mailto:${siteConfig.email}`,
-    icon: Mail,
-  },
+const channels = [
   {
     label: "GitHub",
     value: siteConfig.links.github.replace("https://", ""),
     href: siteConfig.links.github,
-    icon: GithubIcon,
   },
   {
     label: "LinkedIn",
-    value: siteConfig.links.linkedin.replace("https://", ""),
+    value: siteConfig.links.linkedin
+      .replace("https://www.linkedin.com/", "")
+      .replace(/\/$/, ""),
     href: siteConfig.links.linkedin,
-    icon: LinkedinIcon,
   },
-  {
-    label: "Location",
-    value: siteConfig.location,
-    href: null,
-    icon: MapPin,
-  },
+  { label: "Location", value: siteConfig.location, href: null },
+  { label: "Resume", value: "Download CV", href: siteConfig.resumeUrl },
 ];
 
-const inputStyles =
-  "w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm text-foreground placeholder:text-subtle transition-colors duration-300 focus:border-accent focus:outline-none";
+const headline = ["Let's build", "something", "together"];
 
 export function Contact() {
   const [values, setValues] = useState<FormValues>({
@@ -83,6 +62,7 @@ export function Contact() {
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [status, setStatus] = useState<FormStatus>("idle");
+  const magnetic = useMagnetic<HTMLButtonElement>();
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -141,207 +121,203 @@ export function Contact() {
     }
   };
 
+  const fields: {
+    name: keyof FormValues;
+    label: string;
+    type?: string;
+    autoComplete?: string;
+    placeholder: string;
+  }[] = [
+    {
+      name: "name",
+      label: "Name",
+      type: "text",
+      autoComplete: "name",
+      placeholder: "Your name",
+    },
+    {
+      name: "email",
+      label: "Email",
+      type: "email",
+      autoComplete: "email",
+      placeholder: "you@company.com",
+    },
+    {
+      name: "message",
+      label: "Message",
+      placeholder: "Tell me about the role or the project",
+    },
+  ];
+
   return (
-    <section id="contact" className="py-24 md:py-32">
-      <Container>
-        <Reveal>
-          <SectionHeading
-            eyebrow="07 · Contact"
-            title="Let's build something together"
-            description="Have an opportunity, a project or just want to say hi? My inbox is always open — I'll get back to you as soon as I can."
-          />
-        </Reveal>
+    <section
+      id="contact"
+      aria-labelledby="contact-title"
+      className="pb-20 md:pb-24"
+    >
+      <Container className="flex flex-col gap-12 md:gap-20">
+        <SectionHead
+          id="contact-title"
+          index="05"
+          title="Contact"
+          aside="Inbox always open"
+        />
 
-        <div className="grid gap-10 lg:grid-cols-[1fr_1.3fr]">
-          {/* Contact channels */}
-          <div className="space-y-4">
-            {contactChannels.map((channel, index) => {
-              const content = (
-                <Card
-                  hover={channel.href !== null}
-                  className="flex items-center gap-4 p-5"
-                >
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-accent">
-                    <channel.icon className="h-5 w-5" />
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-xs text-subtle">{channel.label}</p>
-                    <p className="truncate text-sm font-medium text-foreground">
-                      {channel.value}
-                    </p>
-                  </div>
-                </Card>
-              );
-              return (
-                <Reveal key={channel.label} delay={index * 0.06}>
-                  {channel.href ? (
-                    <a
-                      href={channel.href}
-                      {...(channel.href.startsWith("http")
-                        ? { target: "_blank", rel: "noopener noreferrer" }
-                        : {})}
-                      className="block"
-                    >
-                      {content}
-                    </a>
-                  ) : (
-                    content
-                  )}
-                </Reveal>
-              );
-            })}
+        {/* Outline headline that fills in as it scrolls into view */}
+        <p className="fx-fill text-[clamp(3.25rem,10.5vw,10.5rem)] font-semibold leading-[0.92] tracking-[-0.055em] text-foreground">
+          {headline.map((line, index) => (
+            <span
+              key={line}
+              className="fx-fill-line"
+              style={cssVars({ "--d": index })}
+            >
+              {line}
+              {index === headline.length - 1 && (
+                <span className="fx-dot">.</span>
+              )}
+            </span>
+          ))}
+        </p>
 
-            <Reveal delay={0.3}>
-              <Button
-                href={siteConfig.resumeUrl}
-                download
-                variant="secondary"
-                className="w-full"
-              >
-                <FileDown className="h-4 w-4 text-accent" />
-                Download CV
-              </Button>
-            </Reveal>
+        <div className="grid items-start gap-x-20 gap-y-14 lg:grid-cols-2">
+          {/* Channels */}
+          <div className="flex flex-col gap-8">
+            <p className="max-w-[44ch] text-lg leading-relaxed text-muted">
+              Have an opportunity, a project or just want to say hi? My inbox is
+              always open — I&apos;ll get back to you as soon as I can.
+            </p>
+            <a
+              href={`mailto:${siteConfig.email}`}
+              className="fx-link w-fit text-[clamp(1.5rem,3vw,2.5rem)] font-medium tracking-[-0.03em]"
+            >
+              <span>{siteConfig.email}</span>
+              <ArrowUpRight className="h-7 w-7" aria-hidden="true" />
+            </a>
+            <dl className="grid gap-x-8 gap-y-3 sm:grid-cols-2">
+              {channels.map((channel) => (
+                <div key={channel.label}>
+                  <dt className={labelClass}>{channel.label}</dt>
+                  <dd>
+                    {channel.href ? (
+                      <a
+                        href={channel.href}
+                        {...(channel.href.startsWith("http")
+                          ? { target: "_blank", rel: "noopener noreferrer" }
+                          : { download: true })}
+                        className="inline-flex min-h-11 items-center text-foreground transition-colors hover:text-accent"
+                      >
+                        {channel.value}
+                      </a>
+                    ) : (
+                      <span className="inline-flex min-h-11 items-center text-foreground">
+                        {channel.value}
+                      </span>
+                    )}
+                  </dd>
+                </div>
+              ))}
+            </dl>
           </div>
 
           {/* Form */}
-          <Reveal delay={0.1}>
-            <Card hover={false} className="p-7">
-              <form onSubmit={handleSubmit} noValidate>
-                {/* Honeypot field — hidden from real users. */}
-                <input
-                  type="text"
-                  name="_gotcha"
-                  tabIndex={-1}
-                  autoComplete="off"
-                  className="hidden"
-                  aria-hidden="true"
-                />
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+            className="flex flex-col gap-7"
+          >
+            {/* Honeypot field — hidden from real users. */}
+            <input
+              type="text"
+              name="_gotcha"
+              tabIndex={-1}
+              autoComplete="off"
+              className="hidden"
+              aria-hidden="true"
+            />
 
-                <div className="grid gap-5 sm:grid-cols-2">
-                  <div>
-                    <label
-                      htmlFor="name"
-                      className="mb-2 block text-sm font-medium text-foreground"
-                    >
-                      Name
+            {fields.map((field) => {
+              const error = errors[field.name];
+              const id = `contact-${field.name}`;
+              const shared = {
+                id,
+                name: field.name,
+                value: values[field.name],
+                onChange: handleChange,
+                placeholder: field.placeholder,
+                "aria-invalid": Boolean(error),
+                "aria-describedby": error ? `${id}-error` : undefined,
+              };
+              return (
+                <div key={field.name}>
+                  <div className="fx-field" data-invalid={Boolean(error)}>
+                    <label htmlFor={id} className={labelClass}>
+                      {field.label}
                     </label>
-                    <input
-                      id="name"
-                      name="name"
-                      type="text"
-                      value={values.name}
-                      onChange={handleChange}
-                      placeholder="Jane Smith"
-                      aria-invalid={Boolean(errors.name)}
-                      className={cn(
-                        inputStyles,
-                        errors.name && "border-red-500/60"
-                      )}
-                    />
-                    {errors.name && (
-                      <p className="mt-1.5 text-xs text-red-500">
-                        {errors.name}
-                      </p>
+                    {field.name === "message" ? (
+                      <textarea rows={4} {...shared} />
+                    ) : (
+                      <input
+                        type={field.type}
+                        autoComplete={field.autoComplete}
+                        {...shared}
+                      />
                     )}
                   </div>
-
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="mb-2 block text-sm font-medium text-foreground"
-                    >
-                      Email
-                    </label>
-                    <input
-                      id="email"
-                      name="email"
-                      type="email"
-                      value={values.email}
-                      onChange={handleChange}
-                      placeholder="jane@company.com"
-                      aria-invalid={Boolean(errors.email)}
-                      className={cn(
-                        inputStyles,
-                        errors.email && "border-red-500/60"
-                      )}
-                    />
-                    {errors.email && (
-                      <p className="mt-1.5 text-xs text-red-500">
-                        {errors.email}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="mt-5">
-                  <label
-                    htmlFor="message"
-                    className="mb-2 block text-sm font-medium text-foreground"
-                  >
-                    Message
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows={6}
-                    value={values.message}
-                    onChange={handleChange}
-                    placeholder="Tell me about your project or opportunity…"
-                    aria-invalid={Boolean(errors.message)}
-                    className={cn(
-                      inputStyles,
-                      "resize-none",
-                      errors.message && "border-red-500/60"
-                    )}
-                  />
-                  {errors.message && (
-                    <p className="mt-1.5 text-xs text-red-500">
-                      {errors.message}
+                  {error && (
+                    <p id={`${id}-error`} className="mt-2 text-xs text-red-500">
+                      {error}
                     </p>
                   )}
                 </div>
+              );
+            })}
 
-                <Button
-                  type="submit"
-                  disabled={status === "loading"}
-                  className="mt-6 w-full disabled:cursor-not-allowed disabled:opacity-70"
-                >
-                  {status === "loading" ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Sending…
-                    </>
-                  ) : (
-                    <>
-                      <Send className="h-4 w-4" />
-                      Send message
-                    </>
-                  )}
-                </Button>
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
+              <button
+                type="submit"
+                disabled={status === "loading"}
+                className="fx-btn"
+                {...magnetic}
+              >
+                {status === "loading" ? (
+                  <>
+                    <Loader2
+                      className="h-4 w-4 animate-spin"
+                      aria-hidden="true"
+                    />
+                    Sending…
+                  </>
+                ) : (
+                  <>
+                    Send message
+                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                  </>
+                )}
+              </button>
 
-                {/* Result feedback */}
-                {status === "success" && (
-                  <p
-                    role="status"
-                    className="mt-4 flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3 text-sm text-emerald-600 dark:text-emerald-400"
-                  >
-                    <CheckCircle2 className="h-4 w-4 shrink-0" />
-                    Message sent successfully — I&apos;ll get back to you soon!
-                  </p>
+              <p
+                role="status"
+                className={cn(
+                  "font-mono text-xs",
+                  status === "success" ? "text-accent" : "sr-only"
                 )}
-                {status === "error" && (
-                  <p
-                    role="alert"
-                    className="mt-4 flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-500"
-                  >
-                    <AlertCircle className="h-4 w-4 shrink-0" />
-                    Something went wrong. Please try again or email me directly.
-                  </p>
-                )}
-              </form>
-            </Card>
-          </Reveal>
+              >
+                {status === "success"
+                  ? "Message sent — I'll get back to you soon."
+                  : ""}
+              </p>
+            </div>
+
+            {status === "error" && (
+              <p
+                role="alert"
+                className="flex items-center gap-2 text-sm text-red-500"
+              >
+                <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
+                Something went wrong. Please try again or email me directly.
+              </p>
+            )}
+          </form>
         </div>
       </Container>
     </section>

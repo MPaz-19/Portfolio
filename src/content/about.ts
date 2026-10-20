@@ -10,6 +10,16 @@ export const aboutParagraphs: string[] = [
   "My goal is to join a team where I can contribute from day one, keep growing as an engineer and help build products that matter.",
 ];
 
+/* Large statement in the About section, lit word by word as it
+   scrolls into view. Segments marked `accent` are highlighted. */
+export const aboutStatement: { text: string; accent?: boolean }[] = [
+  { text: "A developer focused on building" },
+  { text: "things that matter", accent: true },
+  { text: "— I turn complex problems into" },
+  { text: "simple, elegant software,", accent: true },
+  { text: "from the interface down to the API." },
+];
+
 export const aboutHighlights: AboutHighlight[] = [
   {
     title: "Clean Code",

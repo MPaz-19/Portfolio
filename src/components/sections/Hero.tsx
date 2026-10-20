@@ -1,161 +1,126 @@
-"use client";
-
-import { motion, type Variants } from "framer-motion";
-import { ArrowRight, ChevronDown, FileDown, Mail } from "lucide-react";
-import Image from "next/image";
+import { ArrowDown, FileDown } from "lucide-react";
+import Link from "next/link";
 import { siteConfig } from "@/config/site.config";
-import { GithubIcon, LinkedinIcon } from "@/components/ui/BrandIcons";
-import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
+import { LocalTime } from "@/components/ui/LocalTime";
+import { MagneticLink } from "@/components/ui/Magnetic";
+import { cssVars, labelClass } from "@/lib/styles";
+import { cn } from "@/lib/utils";
 
-/* Staggered entrance for the hero content. */
-const containerVariants: Variants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.09, delayChildren: 0.25 } },
-};
-
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.65, ease: [0.21, 0.47, 0.32, 0.98] },
-  },
-};
-
-const socialLinks = [
-  { label: "GitHub", href: siteConfig.links.github, icon: GithubIcon },
-  { label: "LinkedIn", href: siteConfig.links.linkedin, icon: LinkedinIcon },
-  { label: "Email", href: `mailto:${siteConfig.email}`, icon: Mail },
-];
-
+/**
+ * Editorial hero: technical meta row, oversized name whose lines rise
+ * out of a mask once the preloader lifts, and the primary actions.
+ */
 export function Hero() {
+  const [firstName, ...rest] = siteConfig.name.split(" ");
+  const lastName = rest.join(" ");
+
   return (
     <section
       id="hero"
-      className="relative flex min-h-[100svh] items-center overflow-hidden pt-16"
+      aria-labelledby="hero-title"
+      className="relative flex min-h-[100svh] flex-col pb-10 pt-24"
     >
-      {/* Decorative background: soft accent glow + dot grid. */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-[-10%] h-[480px] w-[720px] -translate-x-1/2 rounded-full bg-accent/10 blur-[120px]" />
-        <div className="absolute inset-0 bg-[radial-gradient(var(--border)_1px,transparent_1px)] [background-size:26px_26px] [mask-image:radial-gradient(ellipse_65%_60%_at_50%_40%,black,transparent)]" />
-      </div>
+      <div aria-hidden="true" className="fx-hero-grid" />
 
-      <Container>
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="mx-auto flex max-w-3xl flex-col items-center text-center"
-        >
-          {/* Avatar with gradient ring */}
-          <motion.div variants={itemVariants}>
-            <div className="rounded-full bg-gradient-accent p-[3px] shadow-xl shadow-accent/20">
-              <Image
-                src="/images/avatar.jpg"
-                alt={`${siteConfig.name} — profile photo`}
-                width={112}
-                height={112}
-                priority
-                className="rounded-full object-cover"
-              />
-            </div>
-          </motion.div>
-
-          {/* Availability badge */}
-          {siteConfig.availability && (
-            <motion.div
-              variants={itemVariants}
-              className="mt-7 inline-flex items-center gap-2.5 rounded-full border border-border bg-card px-4 py-1.5 text-xs font-medium text-muted"
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-              </span>
-              {siteConfig.availability}
-            </motion.div>
+      <Container className="relative flex flex-1 flex-col justify-between gap-12">
+        {/* Meta row */}
+        <div
+          className={cn(
+            labelClass,
+            "fx-intro grid gap-x-6 gap-y-3 sm:grid-cols-3"
           )}
+          style={cssVars({ "--d": 0 })}
+        >
+          <span>[00] Index</span>
+          {siteConfig.availability ? (
+            <span className="inline-flex items-center gap-2.5 text-foreground">
+              <span className="fx-pulse" />
+              {siteConfig.availability}
+            </span>
+          ) : (
+            <span />
+          )}
+          <span className="sm:text-right">
+            {siteConfig.city} — <LocalTime /> {siteConfig.utcOffset}
+          </span>
+        </div>
 
-          <motion.h1
-            variants={itemVariants}
-            className="mt-6 text-5xl font-semibold tracking-tight text-foreground md:text-7xl"
+        {/* Name */}
+        <div className="relative">
+          <h1
+            id="hero-title"
+            className="text-[clamp(4rem,15vw,13rem)] font-semibold leading-[0.86] tracking-[-0.055em] text-foreground"
           >
-            Hi, I&apos;m <span className="text-gradient">{siteConfig.name}</span>
-          </motion.h1>
-
-          <motion.p
-            variants={itemVariants}
-            className="mt-5 font-mono text-sm font-medium text-accent md:text-base"
+            <span className="fx-line">
+              <span style={cssVars({ "--d": 1 })}>{firstName}</span>
+            </span>
+            {lastName && (
+              <span className="fx-line md:pl-[24%]">
+                <span style={cssVars({ "--d": 2 })}>
+                  {lastName}
+                  <span className="text-accent">.</span>
+                </span>
+              </span>
+            )}
+          </h1>
+          <p
+            className={cn(
+              labelClass,
+              "fx-intro mt-5 max-w-[30ch] leading-relaxed md:absolute md:bottom-[12%] md:left-0 md:mt-0"
+            )}
+            style={cssVars({ "--d": 3 })}
           >
-            {siteConfig.role}
-          </motion.p>
+            Fig. 01 — {siteConfig.role}
+            <br />
+            Full-stack · Interfaces &amp; APIs
+          </p>
+        </div>
 
-          <motion.p
-            variants={itemVariants}
-            className="mt-5 max-w-2xl text-base leading-relaxed text-muted md:text-lg"
+        {/* Tagline + actions */}
+        <div className="grid items-end gap-x-16 gap-y-8 lg:grid-cols-2">
+          <p
+            className="fx-intro max-w-[36ch] text-lg leading-relaxed text-muted md:text-xl"
+            style={cssVars({ "--d": 3 })}
           >
             {siteConfig.tagline}
-          </motion.p>
-
-          {/* Primary calls to action */}
-          <motion.div
-            variants={itemVariants}
-            className="mt-10 flex flex-wrap items-center justify-center gap-4"
+          </p>
+          <div
+            className="fx-intro flex flex-wrap items-center gap-x-4 gap-y-3 lg:justify-end"
+            style={cssVars({ "--d": 4 })}
           >
-            <Button href="/#projects" size="lg">
-              View Projects
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-            <Button
-              href={siteConfig.resumeUrl}
-              download
-              variant="secondary"
-              size="lg"
-            >
-              <FileDown className="h-4 w-4 text-accent" />
+            <MagneticLink href="/#projects" className="fx-btn">
+              View projects
+              <ArrowDown className="h-4 w-4" aria-hidden="true" />
+            </MagneticLink>
+            <a href={siteConfig.resumeUrl} download className="fx-btn-ghost">
+              <FileDown className="h-4 w-4 text-accent" aria-hidden="true" />
               Download CV
-            </Button>
-            <Button href="/#contact" variant="ghost" size="lg">
-              <Mail className="h-4 w-4" />
-              Contact me
-            </Button>
-          </motion.div>
+            </a>
+            <Link href="/#contact" className="fx-link">
+              <span>Contact me</span>
+            </Link>
+          </div>
+        </div>
 
-          {/* Social links */}
-          <motion.div variants={itemVariants} className="mt-10 flex gap-3">
-            {socialLinks.map(({ label, href, icon: Icon }) => (
-              <a
-                key={label}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={label}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card text-muted transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/40 hover:text-accent"
-              >
-                <Icon className="h-[18px] w-[18px]" />
-              </a>
-            ))}
-          </motion.div>
-        </motion.div>
-      </Container>
-
-      {/* Scroll indicator */}
-      <motion.a
-        href="/#about"
-        aria-label="Scroll to the About section"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.6, duration: 0.8 }}
-        className="absolute bottom-7 left-1/2 -translate-x-1/2 text-subtle transition-colors hover:text-accent"
-      >
-        <motion.span
-          animate={{ y: [0, 8, 0] }}
-          transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
-          className="block"
+        {/* Bottom rule */}
+        <div
+          className={cn(
+            labelClass,
+            "fx-intro flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-border pt-5"
+          )}
+          style={cssVars({ "--d": 5 })}
         >
-          <ChevronDown className="h-5 w-5" />
-        </motion.span>
-      </motion.a>
+          <Link
+            href="/#about"
+            className="inline-flex min-h-11 items-center gap-3.5 transition-colors hover:text-accent"
+          >
+            Scroll <span className="fx-cue" aria-hidden="true" />
+          </Link>
+          <span>{siteConfig.coordinates}</span>
+          <span>Fast · Accessible · Tested</span>
+        </div>
+      </Container>
     </section>
   );
 }

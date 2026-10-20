@@ -6,7 +6,7 @@ import type { ExperienceType } from "@/types";
 import { Badge } from "@/components/ui/Badge";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
-import { SectionHeading } from "@/components/ui/SectionHeading";
+import { SectionHead } from "@/components/ui/SectionHead";
 
 const typeLabel: Record<ExperienceType, string> = {
   work: "Work",
@@ -20,17 +20,17 @@ export function Experience() {
   if (experience.length === 0) return null;
 
   return (
-    <section id="experience" className="py-24 md:py-32">
+    <section id="experience" className="pb-24 md:pb-32">
       <Container>
-        <Reveal>
-          <SectionHeading
-            /* Sections are numbered by hand: if experience comes back, this
-               becomes 04 and Education/Skills/GitHub/Contact shift up one. */
-            eyebrow="04 · Experience"
-            title="Where I've built things"
-            description="Professional work, personal products and academic practice — everything that shaped how I build software."
+        {/* Sections are numbered by hand: if experience comes back, it
+            sits after Projects and Background/Contact shift up one. */}
+        <div className="mb-14">
+          <SectionHead
+            index="04"
+            title="Experience"
+            aside="Where I've built things"
           />
-        </Reveal>
+        </div>
 
         {/* Vertical timeline */}
         <div className="relative space-y-12 before:absolute before:left-[7px] before:top-2 before:h-[calc(100%-1rem)] before:w-px before:bg-border">
